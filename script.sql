@@ -19,13 +19,3 @@ CREATE TABLE productos (
     FOREIGN KEY (prioridad_id) REFERENCES prioridades(id)
 );
 
-INSERT INTO categorias (nombre) VALUES ('Alimentos');
-INSERT INTO categorias (nombre) VALUES ('Higiene');
-INSERT INTO categorias (nombre) VALUES ('Hogar');
-
-
-INSERT INTO prioridades (nombre) VALUES ('Alta');
-INSERT INTO prioridades (nombre) VALUES ('Media');
-INSERT INTO prioridades (nombre) VALUES ('Baja');
-
-SELECT * FROM productos
