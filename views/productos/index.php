@@ -46,7 +46,7 @@
 
                         <div class="row justify-content-center mt-5">
                             <div class="col-auto">
-                                <button class="btn btn-success" type="submit" id="BtnGuardar">
+                                <button class="btn btn-warning" type="submit" id="BtnGuardar">
                                     Guardar
                                 </button>
                             </div>
@@ -69,7 +69,36 @@
         </div>
     </div>
 </div>
+<div class="row justify-content-center p-3">
+    <div class="col-lg-10">
+        <div class="card custom-card shadow-lg" style="border-radius: 10px; border: 1px solid #007bff;">
+            <div class="card-body p-3">
+                <h3 class="text-center">PRODUCTOS PENDIENTES</h3>
+
+                <div class="table-responsive p-2">
+                    <table class="table table-striped table-hover table-bordered w-100 table-sm" id="TableProductosPendientes">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center p-3">
+    <div class="col-lg-10">
+        <div class="card custom-card shadow-lg" style="border-radius: 10px; border: 1px solid #007bff;">
+            <div class="card-body p-3">
+                <h3 class="text-center">PRODUCTOS COMPRADOS</h3>
+
+                <div class="table-responsive p-2">
+                    <table class="table table-striped table-hover table-bordered w-100 table-sm" id="TableProductosComprados">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
-<script src="<?= asset('build/js/productos/index.js') ?>"></script>.0
+<script src="<?= asset('build/js/productos/index.js') ?>"></script>
