@@ -221,6 +221,8 @@ const datatableComprados = new DataTable('#TableProductosComprados', {
     ]
 });
 
+
+
 const llenarFormulario = (event) => {
     const datos = event.currentTarget.dataset;
 
@@ -240,6 +242,60 @@ const limpiarTodo = () => {
     BtnModificar.classList.add('d-none');
 }
 
+const ModificarProducto = async (event) => {
+    event.preventDefault();
+    BtnModificar.disabled = true;
+
+    if (!validarFormulario(FormProductos, [''])) {
+        Swal.fire({
+            position: "center",
+            icon: "info",
+            title: "FORMULARIO INCOMPLETO",
+            text: "Debe completar todos los campos",
+            showConfirmButton: true,
+        });
+        BtnModificar.disabled = false;
+        return;
+    }
+
+    const body = new FormData(FormProductos);
+
+    const url = '/app01_jjjc/productos/modificarAPI';
+    const config = {
+        method: 'POST',
+        body
+    }
+
+    try {
+        const respuesta = await fetch(url, config);
+        const datos = await respuesta.json();
+        const { codigo, mensaje } = datos;
+
+        if (codigo == 1) {
+            await Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Éxito",
+                text: mensaje,
+                showConfirmButton: true,
+            });
+
+            limpiarTodo();
+            BuscarProductos();
+        } else {
+            await Swal.fire({
+                position: "center",
+                icon: "info",
+                title: "Error",
+                text: mensaje,
+                showConfirmButton: true,
+            });
+        }
+    } catch (error) {
+        console.log(error);
+    }
+    BtnModificar.disabled = false;
+}
 
 
 BuscarProductos();
@@ -247,3 +303,4 @@ FormProductos.addEventListener('submit', GuardarProducto);
 datatablePendientes.on('click', '.modificar', llenarFormulario);
 datatablePendientes.on('click', '.marcarComprado', marcarComprado);
 datatableComprados.on('click', '.desmarcarComprado', desmarcarComprado);
+BtnModificar.addEventListener('click', ModificarProducto);

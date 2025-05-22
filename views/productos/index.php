@@ -58,6 +58,12 @@
                             </div>
 
                             <div class="col-auto">
+                                <button class="btn btn-danger d-none" type="button" id="BtnEliminar">
+                                    <i class="bi bi-trash me-1"></i>Eliminar
+                                </button>
+                            </div>
+
+                            <div class="col-auto">
                                 <button class="btn btn-secondary" type="reset" id="BtnLimpiar">
                                     Limpiar
                                 </button>

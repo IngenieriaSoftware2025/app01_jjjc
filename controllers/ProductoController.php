@@ -130,4 +130,95 @@ class ProductoController extends ActiveRecord
         }
     }
 
+
+
+    
+    public static function modificarAPI()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        $id = $_POST['id'];
+
+        if(empty($_POST['nombre'])) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'El nombre del producto es obligatorio'
+            ]);
+            return;
+        }
+
+        $_POST['cantidad'] = filter_var($_POST['cantidad'], FILTER_VALIDATE_INT);
+        if(!$_POST['cantidad'] || $_POST['cantidad'] <= 0) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'La cantidad debe ser un número entero positivo'
+            ]);
+            return;
+        }
+
+        $_POST['categoria_id'] = filter_var($_POST['categoria_id'], FILTER_VALIDATE_INT);
+        if(!$_POST['categoria_id']) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Debe seleccionar una categoría válida'
+            ]);
+            return;
+        }
+
+        $_POST['prioridad_id'] = filter_var($_POST['prioridad_id'], FILTER_VALIDATE_INT);
+        if(!$_POST['prioridad_id']) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Debe seleccionar una prioridad válida'
+            ]);
+            return;
+        }
+
+        try {
+            $producto = Producto::find($id);
+            
+            if(!$producto) {
+                http_response_code(404);
+                echo json_encode([
+                    'codigo' => 0,
+                    'mensaje' => 'Producto no encontrado'
+                ]);
+                return;
+            }
+            
+           
+            
+            $producto->sincronizar([
+                'nombre' => $_POST['nombre'],
+                'cantidad' => $_POST['cantidad'],
+                'categoria_id' => $_POST['categoria_id'],
+                'prioridad_id' => $_POST['prioridad_id']
+            ]);
+            
+            $producto->actualizar();
+
+            http_response_code(200);
+            echo json_encode([
+                'codigo' => 1,
+                'mensaje' => 'El producto ha sido modificado exitosamente'
+            ]);
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'codigo' => 0,
+                'mensaje' => 'Error al guardar',
+                'detalle' => $e->getMessage(),
+            ]);
+        }
+    }
+
+
+
+
+
+    
 }
