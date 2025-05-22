@@ -306,7 +306,227 @@ const ModificarProducto = async (event) => {
     BtnModificar.disabled = false;
 }
 
+const marcarComprado = async (event) => {
+    const id = event.currentTarget.dataset.id;
+    
+    const body = new FormData();
+    body.append('id', id);
+    body.append('comprado', 1);
 
+    const url = '/app01_jjjc/productos/marcarCompradoAPI';
+    const config = {
+        method: 'POST',
+        body
+    }
+
+    try {
+        const respuesta = await fetch(url, config);
+        const datos = await respuesta.json();
+        const { codigo, mensaje } = datos;
+
+        if (codigo == 1) {
+            Toast.fire({
+                icon: 'success',
+                title: mensaje
+            });
+            BuscarProductos();
+        } else {
+            await Swal.fire({
+                position: "center",
+                icon: "info",
+                title: "Error",
+                text: mensaje,
+                showConfirmButton: true,
+            });
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const desmarcarComprado = async (event) => {
+    const id = event.currentTarget.dataset.id;
+    
+    const body = new FormData();
+    body.append('id', id);
+    body.append('comprado', 0);
+
+    const url = '/app01_jjjc/productos/marcarCompradoAPI';
+    const config = {
+        method: 'POST',
+        body
+    }
+
+    try {
+        const respuesta = await fetch(url, config);
+        const datos = await respuesta.json();
+        const { codigo, mensaje } = datos;
+
+        if (codigo == 1) {
+            Toast.fire({
+                icon: 'success',
+                title: mensaje
+            });
+            BuscarProductos();
+        } else {
+            await Swal.fire({
+                position: "center",
+                icon: "info",
+                title: "Error",
+                text: mensaje,
+                showConfirmButton: true,
+            });
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+// Función para eliminar producto desde las tablas
+const eliminarProducto = async (event) => {
+    const id = event.currentTarget.dataset.id;
+    const nombre = event.currentTarget.dataset.nombre;
+    
+    // Confirmación antes de eliminar
+    const resultado = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: `¿Quieres eliminar el producto "${nombre}"? Esta acción no se puede deshacer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (!resultado.isConfirmed) {
+        return;
+    }
+    
+    const body = new FormData();
+    body.append('id', id);
+
+    const url = '/app01_jjjc/productos/eliminarAPI';
+    const config = {
+        method: 'POST',
+        body
+    }
+
+    try {
+        const respuesta = await fetch(url, config);
+        const datos = await respuesta.json();
+        const { codigo, mensaje } = datos;
+
+        if (codigo == 1) {
+            await Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Eliminado",
+                text: mensaje,
+                showConfirmButton: true,
+            });
+            BuscarProductos();
+        } else {
+            await Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "Error",
+                text: mensaje,
+                showConfirmButton: true,
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        await Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "Error",
+            text: "Error de conexión al eliminar el producto",
+            showConfirmButton: true,
+        });
+    }
+}
+
+// Función para eliminar producto desde el formulario
+const eliminarProductoFormulario = async () => {
+    const id = document.getElementById('id').value;
+    const nombre = document.getElementById('nombre').value;
+    
+    if (!id) {
+        Swal.fire({
+            position: "center",
+            icon: "warning",
+            title: "No hay producto seleccionado",
+            text: "Debe seleccionar un producto para eliminar",
+            showConfirmButton: true,
+        });
+        return;
+    }
+    
+    // Confirmación antes de eliminar
+    const resultado = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: `¿Quieres eliminar el producto "${nombre}"? Esta acción no se puede deshacer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (!resultado.isConfirmed) {
+        return;
+    }
+    
+    BtnEliminar.disabled = true;
+    
+    const body = new FormData();
+    body.append('id', id);
+
+    const url = '/app01_jjjc/productos/eliminarAPI';
+    const config = {
+        method: 'POST',
+        body
+    }
+
+    try {
+        const respuesta = await fetch(url, config);
+        const datos = await respuesta.json();
+        const { codigo, mensaje } = datos;
+
+        if (codigo == 1) {
+            await Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Eliminado",
+                text: mensaje,
+                showConfirmButton: true,
+            });
+            limpiarTodo();
+            BuscarProductos();
+        } else {
+            await Swal.fire({
+                position: "center",
+                icon: "error",
+                title: "Error",
+                text: mensaje,
+                showConfirmButton: true,
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        await Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "Error",
+            text: "Error de conexión al eliminar el producto",
+            showConfirmButton: true,
+        });
+    }
+    
+    BtnEliminar.disabled = false;
+}
 
 
 

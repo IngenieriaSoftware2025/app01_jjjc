@@ -66,7 +66,6 @@ class ProductoController extends ActiveRecord
         }
 
        try {
-        // VALIDACIÓN DE PRODUCTO DUPLICADO
         $nombreProducto = $_POST['nombre'];
         $sql = "SELECT COUNT(*) as total FROM productos WHERE LOWER(nombre) = LOWER('$nombreProducto') AND situacion = '1' AND comprado = 0";
         $resultado = self::fetchArray($sql);
