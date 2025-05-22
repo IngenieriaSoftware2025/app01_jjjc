@@ -222,5 +222,8 @@ const datatableComprados = new DataTable('#TableProductosComprados', {
 });
 
 
-
+BuscarProductos();
 FormProductos.addEventListener('submit', GuardarProducto);
+datatablePendientes.on('click', '.modificar', llenarFormulario);
+datatablePendientes.on('click', '.marcarComprado', marcarComprado);
+datatableComprados.on('click', '.desmarcarComprado', desmarcarComprado);
