@@ -8,6 +8,8 @@ const FormProductos = document.getElementById('FormProductos');
 const BtnGuardar = document.getElementById('BtnGuardar');
 const BtnModificar = document.getElementById('BtnModificar');
 const BtnLimpiar = document.getElementById('BtnLimpiar');
+const BtnEliminar = document.getElementById('BtnEliminar');
+
 
 const GuardarProducto = async (event) => {
     event.preventDefault();
@@ -234,6 +236,13 @@ const llenarFormulario = (event) => {
 
     BtnGuardar.classList.add('d-none');
     BtnModificar.classList.remove('d-none');
+
+
+    FormProductos.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+    });
+
 }
 
 const limpiarTodo = () => {
@@ -298,9 +307,16 @@ const ModificarProducto = async (event) => {
 }
 
 
+
+
+
+
+
+
 BuscarProductos();
 FormProductos.addEventListener('submit', GuardarProducto);
 datatablePendientes.on('click', '.modificar', llenarFormulario);
-datatablePendientes.on('click', '.marcarComprado', marcarComprado);
-datatableComprados.on('click', '.desmarcarComprado', desmarcarComprado);
+//datatablePendientes.on('click', '.marcarComprado', marcarComprado);
+//datatableComprados.on('click', '.desmarcarComprado', desmarcarComprado);
 BtnModificar.addEventListener('click', ModificarProducto);
+BtnLimpiar.addEventListener('click', limpiarTodo);

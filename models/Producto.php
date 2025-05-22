@@ -11,7 +11,7 @@ class Producto extends ActiveRecord {
         'cantidad',
         'categoria_id',
         'prioridad_id',
-        'comprado'
+        'comprado',
     ];
 
     public static $idTabla = 'id';
@@ -29,7 +29,7 @@ class Producto extends ActiveRecord {
         $this->cantidad = $args['cantidad'] ?? 1;
         $this->categoria_id = $args['categoria_id'] ?? null;
         $this->prioridad_id = $args['prioridad_id'] ?? null;
-        $this->comprado = $args['comprado'] ?? 1;
+        $this->comprado = $args['comprado'] ?? 0;
     }
 
     public function existeProductoCategoria() {
