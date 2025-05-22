@@ -221,6 +221,26 @@ const datatableComprados = new DataTable('#TableProductosComprados', {
     ]
 });
 
+const llenarFormulario = (event) => {
+    const datos = event.currentTarget.dataset;
+
+    document.getElementById('id').value = datos.id;
+    document.getElementById('nombre').value = datos.nombre;
+    document.getElementById('cantidad').value = datos.cantidad;
+    document.getElementById('categoria_id').value = datos.categoria;
+    document.getElementById('prioridad_id').value = datos.prioridad;
+
+    BtnGuardar.classList.add('d-none');
+    BtnModificar.classList.remove('d-none');
+}
+
+const limpiarTodo = () => {
+    FormProductos.reset();
+    BtnGuardar.classList.remove('d-none');
+    BtnModificar.classList.add('d-none');
+}
+
+
 
 BuscarProductos();
 FormProductos.addEventListener('submit', GuardarProducto);
