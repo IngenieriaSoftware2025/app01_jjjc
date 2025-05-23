@@ -559,6 +559,76 @@ const eliminarProducto = async (event) => {
     }
 }
 
+const manejarCategoria = () => {
+    const formCategoria = document.getElementById('formCategoria');
+    if (!formCategoria) return;
+
+    formCategoria.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        
+        const btnGuardar = document.getElementById('btnGuardarCategoria');
+        const nombreCategoria = document.getElementById('nombreCategoria').value.trim();
+        
+        if (!nombreCategoria) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campo requerido',
+                text: 'Debe ingresar el nombre de la categoría'
+            });
+            return;
+        }
+        
+        const textoOriginal = btnGuardar.innerHTML;
+        btnGuardar.innerHTML = 'Guardando...';
+        btnGuardar.disabled = true;
+        
+        const formData = new FormData();
+        formData.append('nombre', nombreCategoria);
+        
+        try {
+            const response = await fetch('/app01_jjjc/categorias/guardarAPI', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const datos = await response.json();
+            
+            if (datos.codigo === 1) {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'Categoría agregada correctamente',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                
+                document.getElementById('formCategoria').reset();
+                bootstrap.Modal.getInstance(document.getElementById('modalCategoria')).hide();
+                
+                setTimeout(() => location.reload(), 1000);
+                
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: datos.mensaje
+                });
+            }
+            
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No se pudo conectar con el servidor'
+            });
+        }
+        
+        btnGuardar.innerHTML = textoOriginal;
+        btnGuardar.disabled = false;
+    });
+};
+
+manejarCategoria();
 
 
 
