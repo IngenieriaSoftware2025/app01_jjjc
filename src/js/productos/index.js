@@ -120,21 +120,92 @@ const datatablePendientes = new DataTable('#TableProductosPendientes', {
     `,
     language: lenguaje,
     data: [],
+    order: [[3, 'asc'], [4, 'asc']], 
+    drawCallback: function(settings) {
+        const api = this.api();
+        const rows = api.rows({page: 'current'}).nodes();
+        let lastCategory = null;
+        let lastPriority = null;
+
+        api.rows({page: 'current'}).every(function(rowIdx, tableLoop, rowLoop) {
+            const data = this.data();
+            const currentCategory = data.categoria_nombre;
+            
+            let currentPriority = data.prioridad_nombre;
+            if (typeof currentPriority === 'string' && currentPriority.includes('span')) {
+                const tempElement = document.createElement('div');
+                tempElement.innerHTML = currentPriority;
+                currentPriority = tempElement.textContent || tempElement.innerText;
+            }
+
+            const currentRow = rows[rowLoop];
+
+            if (lastCategory !== currentCategory) {
+                const categorySeparator = document.createElement('tr');
+                categorySeparator.className = 'category-separator';
+                categorySeparator.innerHTML = `
+                    <td colspan="6" style="
+                        background-color: #f8f9fa;
+                        border-top: 3px solid #007bff;
+                        border-bottom: 1px solid #dee2e6;
+                        padding: 12px 15px;
+                        text-align: left;
+                        font-weight: bold;
+                        font-size: 1.1em;
+                        color: #007bff;
+                        text-transform: uppercase;
+                    ">
+                        ${currentCategory}
+                    </td>
+                `;
+                
+                currentRow.parentNode.insertBefore(categorySeparator, currentRow);
+                lastCategory = currentCategory;
+                lastPriority = null; 
+            }
+
+            if (lastPriority !== currentPriority) {
+                const prioritySeparator = document.createElement('tr');
+                prioritySeparator.className = 'priority-separator';
+                prioritySeparator.innerHTML = `
+                    <td colspan="6" style="
+                        background-color: #f1f3f4;
+                        border-left: 3px solid #6c757d;
+                        padding: 8px 25px;
+                        text-align: left;
+                        font-weight: 600;
+                        font-size: 0.9em;
+                        color: #495057;
+                        font-style: italic;
+                    ">
+                        → ${currentPriority}
+                    </td>
+                `;
+                
+                currentRow.parentNode.insertBefore(prioritySeparator, currentRow);
+                lastPriority = currentPriority;
+            }
+        });
+    },
     columns: [
         {
             title: 'No.',
             data: 'id',
             width: '5%',
+            orderable: false,
             render: (data, type, row, meta) => meta.row + 1
         },
-        { title: 'Producto', data: 'nombre', width: '25%' },
-        { title: 'Cantidad', data: 'cantidad', width: '10%' },
-        { title: 'Categoría', data: 'categoria_nombre', width: '20%' },
+        { title: 'Producto', data: 'nombre', width: '20%' },
+        { title: 'Cantidad', data: 'cantidad', width: '8%' },
+        { title: 'Categoría', data: 'categoria_nombre', width: '15%' },
         { 
             title: 'Prioridad', 
             data: 'prioridad_nombre', 
-            width: '15%',
+            width: '12%',
             render: (data, type, row) => {
+                if (type === 'sort') {
+                    return data === 'Alta' ? '1' : data === 'Media' ? '2' : '3';
+                }
                 let badge = 'badge bg-secondary';
                 if (data === 'Alta') {
                     badge = 'badge bg-danger';
@@ -149,13 +220,13 @@ const datatablePendientes = new DataTable('#TableProductosPendientes', {
         {
             title: 'Acciones',
             data: 'id',
-            width: '25%',
+            width: '40%',
             searchable: false,
             orderable: false,
             render: (data, type, row, meta) => {
                 return `
-                <div class='d-flex justify-content-center'>
-                    <button class='btn btn-warning btn-sm modificar mx-1' 
+                <div class='d-flex justify-content-center flex-wrap'>
+                    <button class='btn btn-warning btn-sm modificar mx-1 my-1' 
                         data-id="${data}" 
                         data-nombre="${row.nombre}"  
                         data-cantidad="${row.cantidad}"  
@@ -163,16 +234,20 @@ const datatablePendientes = new DataTable('#TableProductosPendientes', {
                         data-prioridad="${row.prioridad_id}">
                         <i class='bi bi-pencil-square me-1'></i> Editar
                     </button>
-                    <button class='btn btn-success btn-sm marcarComprado mx-1' 
+                    <button class='btn btn-success btn-sm marcarComprado mx-1 my-1' 
                         data-id="${data}">
                         <i class="bi bi-check-circle me-1"></i>Comprado
+                    </button>
+                    <button class='btn btn-danger btn-sm eliminar mx-1 my-1' 
+                        data-id="${data}"
+                        data-nombre="${row.nombre}">
+                        <i class="bi bi-trash me-1"></i>Eliminar
                     </button>
                 </div>`;
             }
         }
     ]
 });
-
 
 const datatableComprados = new DataTable('#TableProductosComprados', {
     dom: `
@@ -189,11 +264,47 @@ const datatableComprados = new DataTable('#TableProductosComprados', {
     `,
     language: lenguaje,
     data: [],
+    order: [[3, 'asc']], 
+    drawCallback: function(settings) {
+        const api = this.api();
+        const rows = api.rows({page: 'current'}).nodes();
+        let lastCategory = null;
+
+        api.rows({page: 'current'}).every(function(rowIdx, tableLoop, rowLoop) {
+            const data = this.data();
+            const currentCategory = data.categoria_nombre;
+            const currentRow = rows[rowLoop];
+
+            if (lastCategory !== currentCategory) {
+                const categorySeparator = document.createElement('tr');
+                categorySeparator.className = 'category-separator-comprados';
+                categorySeparator.innerHTML = `
+                    <td colspan="5" style="
+                        background-color: #f8f9fa;
+                        border-top: 3px solid #28a745;
+                        border-bottom: 1px solid #dee2e6;
+                        padding: 12px 15px;
+                        text-align: left;
+                        font-weight: bold;
+                        font-size: 1.1em;
+                        color: #28a745;
+                        text-transform: uppercase;
+                    ">
+                        ${currentCategory}
+                    </td>
+                `;
+                
+                currentRow.parentNode.insertBefore(categorySeparator, currentRow);
+                lastCategory = currentCategory;
+            }
+        });
+    },
     columns: [
         {
             title: 'No.',
             data: 'id',
             width: '5%',
+            orderable: false,
             render: (data, type, row, meta) => meta.row + 1
         },
         { 
@@ -212,17 +323,21 @@ const datatableComprados = new DataTable('#TableProductosComprados', {
             orderable: false,
             render: (data, type, row, meta) => {
                 return `
-                <div class='d-flex justify-content-center'>
-                    <button class='btn btn-danger btn-sm desmarcarComprado mx-1' 
+                <div class='d-flex justify-content-center flex-wrap'>
+                    <button class='btn btn-info btn-sm desmarcarComprado mx-1 my-1' 
                         data-id="${data}">
                         <i class="bi bi-x-circle me-1"></i>No Comprado
+                    </button>
+                    <button class='btn btn-danger btn-sm eliminar mx-1 my-1' 
+                        data-id="${data}"
+                        data-nombre="${row.nombre}">
+                        <i class="bi bi-trash me-1"></i>Eliminar
                     </button>
                 </div>`;
             }
         }
     ]
 });
-
 
 
 const llenarFormulario = (event) => {
@@ -236,7 +351,6 @@ const llenarFormulario = (event) => {
 
     BtnGuardar.classList.add('d-none');
     BtnModificar.classList.remove('d-none');
-
 
     FormProductos.scrollIntoView({ 
         behavior: 'smooth', 
@@ -382,12 +496,10 @@ const desmarcarComprado = async (event) => {
     }
 }
 
-// Función para eliminar producto desde las tablas
 const eliminarProducto = async (event) => {
     const id = event.currentTarget.dataset.id;
     const nombre = event.currentTarget.dataset.nombre;
     
-    // Confirmación antes de eliminar
     const resultado = await Swal.fire({
         title: '¿Estás seguro?',
         text: `¿Quieres eliminar el producto "${nombre}"? Esta acción no se puede deshacer.`,
@@ -445,87 +557,6 @@ const eliminarProducto = async (event) => {
             showConfirmButton: true,
         });
     }
-}
-
-// Función para eliminar producto desde el formulario
-const eliminarProductoFormulario = async () => {
-    const id = document.getElementById('id').value;
-    const nombre = document.getElementById('nombre').value;
-    
-    if (!id) {
-        Swal.fire({
-            position: "center",
-            icon: "warning",
-            title: "No hay producto seleccionado",
-            text: "Debe seleccionar un producto para eliminar",
-            showConfirmButton: true,
-        });
-        return;
-    }
-    
-    // Confirmación antes de eliminar
-    const resultado = await Swal.fire({
-        title: '¿Estás seguro?',
-        text: `¿Quieres eliminar el producto "${nombre}"? Esta acción no se puede deshacer.`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Sí, eliminar',
-        cancelButtonText: 'Cancelar'
-    });
-
-    if (!resultado.isConfirmed) {
-        return;
-    }
-    
-    BtnEliminar.disabled = true;
-    
-    const body = new FormData();
-    body.append('id', id);
-
-    const url = '/app01_jjjc/productos/eliminarAPI';
-    const config = {
-        method: 'POST',
-        body
-    }
-
-    try {
-        const respuesta = await fetch(url, config);
-        const datos = await respuesta.json();
-        const { codigo, mensaje } = datos;
-
-        if (codigo == 1) {
-            await Swal.fire({
-                position: "center",
-                icon: "success",
-                title: "Eliminado",
-                text: mensaje,
-                showConfirmButton: true,
-            });
-            limpiarTodo();
-            BuscarProductos();
-        } else {
-            await Swal.fire({
-                position: "center",
-                icon: "error",
-                title: "Error",
-                text: mensaje,
-                showConfirmButton: true,
-            });
-        }
-    } catch (error) {
-        console.log(error);
-        await Swal.fire({
-            position: "center",
-            icon: "error",
-            title: "Error",
-            text: "Error de conexión al eliminar el producto",
-            showConfirmButton: true,
-        });
-    }
-    
-    BtnEliminar.disabled = false;
 }
 
 
@@ -536,7 +567,9 @@ const eliminarProductoFormulario = async () => {
 BuscarProductos();
 FormProductos.addEventListener('submit', GuardarProducto);
 datatablePendientes.on('click', '.modificar', llenarFormulario);
-//datatablePendientes.on('click', '.marcarComprado', marcarComprado);
-//datatableComprados.on('click', '.desmarcarComprado', desmarcarComprado);
+datatablePendientes.on('click', '.marcarComprado', marcarComprado);
+datatableComprados.on('click', '.desmarcarComprado', desmarcarComprado);
 BtnModificar.addEventListener('click', ModificarProducto);
 BtnLimpiar.addEventListener('click', limpiarTodo);
+datatablePendientes.on('click', '.eliminar', eliminarProducto);
+datatableComprados.on('click', '.eliminar', eliminarProducto);

@@ -3,7 +3,6 @@
 namespace Model;
 
 class Producto extends ActiveRecord {
-
     public static $tabla = 'productos';
     public static $columnasDB = [
         'id',
@@ -11,7 +10,8 @@ class Producto extends ActiveRecord {
         'cantidad',
         'categoria_id',
         'prioridad_id',
-        'comprado'
+        'comprado',
+        'situacion'  
     ];
 
     public static $idTabla = 'id';
@@ -21,7 +21,7 @@ class Producto extends ActiveRecord {
     public $categoria_id;
     public $prioridad_id;
     public $comprado;
-
+    public $situacion;  
 
     public function __construct($args = []){
         $this->id = $args['id'] ?? null;
@@ -29,19 +29,9 @@ class Producto extends ActiveRecord {
         $this->cantidad = $args['cantidad'] ?? 1;
         $this->categoria_id = $args['categoria_id'] ?? null;
         $this->prioridad_id = $args['prioridad_id'] ?? null;
-        $this->comprado = $args['comprado'] ?? 1;
+        $this->comprado = $args['comprado'] ?? 0;
+        $this->situacion = $args['situacion'] ?? '1'; 
     }
 
-    public function existeProductoCategoria() {
-    $query = "SELECT COUNT(*) as total FROM " . self::$tabla . 
-            " WHERE nombre = " . self::$db->quote($this->nombre) . 
-            " AND categoria_id = " . self::$db->quote($this->categoria_id) . 
-            " AND comprado = 0";
-    
-    $resultado = self::$db->query($query);
-    $row = $resultado->fetch(\PDO::FETCH_ASSOC);
-    $total = isset($row['total']) ? $row['total'] : 0;
-    
-    return ($total > 0);
-}
+ 
 }
